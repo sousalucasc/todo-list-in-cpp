@@ -24,10 +24,13 @@ public:
     int getId() {return id;}
     std::string getDescription() { return description;}
     bool isCompleted() { return completed; }
+    void setCompleted(bool val) { completed = val; }
 };
 
 int main(){
     int input_option;
+    int input_id;
+    std::string input_description;
     std::string version = "v0.0.1";
     std::list<TodoItem> todoItems; // Lista
     std::list<TodoItem>::iterator it; // Iteration Variable, como um cursor que aponta para cada item da lista
@@ -45,11 +48,11 @@ int main(){
         // Limpa nosso CLI em cada iteração do loop
 
         std::cout << "Lista de Tarefas em C++ - " << version << std::endl;
-        std::cout << std::endl << std::endl;
+        std::cout << std::endl;
 
         for (it = todoItems.begin(); it != todoItems.end(); it++) { // Rodar o loop até o ultimo elemento
 
-            std::string completed = it->isCompleted() ? "OK" : "X"; 
+            std::string completed = it->isCompleted() ? "FEITO" : "PENDENTE"; 
             // Operador ternario (condicional) compacto
             // Basicamente um if/else que retorna um valor
 
@@ -62,19 +65,46 @@ int main(){
             std::cout << "Adicione sua primeira tarefa!\n\n";
         }
 
-        std::cout << "[1] Adicionar nova tarefa" << std::endl;
+        std::cout << "\n[1] Adicionar nova tarefa" << std::endl;
         std::cout << "[2] Completar uma tarefa" << std::endl;
         std::cout << "[3] Sair do programa" << std::endl;
 
         std::cout << "Opcao: ";
         std::cin >> input_option;
 
-        if (input_option == 3) {
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        if (input_option == 3) { // Caso queira sair do programa
             std::cout << "\nTenha um belo dia!" << std::endl;
             break;
         }
+        else if (input_option == 1) {
+            std::cout << "Adicione uma descricao: ";
+            std::cin.clear(); // Comecando com um inputbuffer zerado
+            std::cin.ignore(); // Ignorar primeiro retorno
+            std::getline(std::cin, input_description); // Setar descricao podendo ter espacos
 
-        break;
+            TodoItem newItem;
+            newItem.create(input_description);
+            todoItems.push_back(newItem);
+        }
+        else if (input_option == 2) { // Caso queira marcar complete
+            std::cout << "Qual o ID para marcar complete?" << std::endl;
+            std::cin >> input_id;
+
+            for (it = todoItems.begin(); it != todoItems.end(); it++) {
+
+                if (input_id == it->getId()) {
+                    it->setCompleted(true);
+                    break;
+                }
+            }
+
+        }
     }
 
     return 0;
